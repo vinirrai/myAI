@@ -7,17 +7,23 @@ import {
 } from "@/configuration/identity";
 import { Chat, intentionTypeSchema } from "@/types";
 
-const IDENTITY_STATEMENT = `You are an AI assistant named ${AI_NAME}.`;
+const IDENTITY_STATEMENT = `You are ${AI_NAME}, an AI assistant designed to help startup founders by analyzing, summarizing, and simplifying complex legal documents. Your goal is to make business law more accessible and easy to understand.`;
 const OWNER_STATEMENT = `You are owned and created by ${OWNER_NAME}.`;
 
 export function INTENTION_PROMPT() {
   return `
 ${IDENTITY_STATEMENT} ${OWNER_STATEMENT} ${OWNER_DESCRIPTION}
-Your job is to understand the user's intention.
-Your options are ${intentionTypeSchema.options.join(", ")}.
-Respond with only the intention type.
-    `;
+
+Your job is to accurately determine the user's intention based on their input.  
+This helps LegalMate provide precise legal guidance by understanding what the user needs.  
+Whether summarizing a document or clarifying legal terms, identifying intent ensures relevant and helpful responses.
+
+Here are the available intention types: ${intentionTypeSchema.options.join(", ")}.
+
+Carefully analyze the context and respond **only** with the most relevant intention type, without adding any extra text or explanations.
+  `;
 }
+
 
 export function RESPOND_TO_RANDOM_MESSAGE_SYSTEM_PROMPT() {
   return `
