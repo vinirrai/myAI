@@ -145,18 +145,28 @@ export default function useApp() {
 
   const processStreamedResponse = async (response: Response) => {
     const reader = response.body?.getReader();
-    if (!reader) {
-      throw new Error("No reader available");
-    }
-
+    if (!reader) throw new Error("No reader available");
+  
+    const decoder = new TextDecoder();
+    let buffer = "";
+  
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
-
-      const payload = new TextDecoder().decode(value);
-      routeResponseToProperHandler(payload);
+  
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop()!; // keep last (possibly partial) line
+  
+      for (const line of lines) {
+        if (line.trim()) routeResponseToProperHandler(line);
+      }
     }
+  
+    // Process any remaining complete JSON after stream ends
+    if (buffer.trim()) routeResponseToProperHandler(buffer);
   };
+  
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
